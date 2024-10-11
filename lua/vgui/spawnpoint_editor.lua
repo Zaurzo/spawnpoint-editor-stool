@@ -6,8 +6,6 @@ local function nodeDoClick(self)
     if not IsValid(ent) then return end
 
     local parent = self.parent
-    local tabComponents = parent.ComponentTab
-
     local pos, ang = ent:GetPos(), ent:GetAngles()
 
     parent:SetComponentValues('Position', pos.x, pos.y, pos.z)
