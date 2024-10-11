@@ -82,7 +82,7 @@ if SERVER then
         end
 
         for id in pairs(mapSpawnsRemoved) do
-            table.insert(points, {removeid = id})
+            table.insert(points, { removeid = id })
         end
 
         file.Write(savedFileName, util.TableToJSON(points))
@@ -129,25 +129,25 @@ if SERVER then
     end
 
     function TOOL:Think()
-		local wep = self:GetWeapon()
+        local wep = self:GetWeapon()
         local tr = self:GetOwner():GetEyeTrace()
 
         local selected = wep.SpawnPointEditorSelected
-        
+
         if IsValid(selected) then
             selected:SetNWBool('PointSelected', false)
         end
 
-		for k, ent in ipairs(ents.FindAlongRay(tr.StartPos, tr.HitPos)) do
-			if ent:GetClass() == 'spawnpoint_editor' then
+        for k, ent in ipairs(ents.FindAlongRay(tr.StartPos, tr.HitPos)) do
+            if ent:GetClass() == 'spawnpoint_editor' then
                 wep.SpawnPointEditorSelected = ent
 
                 return ent:SetNWBool('PointSelected', true)
-			end
-		end
+            end
+        end
 
         wep.SpawnPointEditorSelected = nil
-	end
+    end
 
     -- Hooks
 
@@ -159,15 +159,15 @@ if SERVER then
 
             local model = ents.Create('spawnpoint_editor')
 
-            if spawnPoint.IsFromSpawnPointEditor and not model:IsValid() then 
+            if spawnPoint.IsFromSpawnPointEditor and not model:IsValid() then
                 return spawnPoint:Remove()
             end
-    
+
             model:SetPos(spawnPoint:GetPos())
             model:SetAngles(spawnPoint:GetAngles())
             model:Spawn()
             model:SetParent(spawnPoint)
-    
+
             model.SpawnPoint = spawnPoint
         end)
     end)
@@ -190,7 +190,7 @@ if SERVER then
                 table.insert(spawnPoints, spawnPoint)
             end
         end
-    end) 
+    end)
 
     -- Console Commands
 
@@ -199,9 +199,9 @@ if SERVER then
     local function reset(ignoreCreatedPoints)
         mapSpawnsRemoved = {}
 
-        local filter = {} 
+        local filter = {}
         local n = 1
-        
+
         for k, ent in ipairs(ents.GetAll()) do
             local classname = ent:GetClass()
 
@@ -306,31 +306,26 @@ else
         local pos, ang
 
         cam.Start3D()
-            if not IsValid(csEnt) then
-                csEnt = ClientsideModel('models/editor/playerstart.mdl')
-                csEnt:SetNoDraw(true)
-            else
-                pos = LocalPlayer():GetEyeTrace().HitPos
 
-                if pos then
-                    ang = angleSet[self:GetWeapon():GetNWInt('SpawnPointEditorAngle', 1)]
+        if not IsValid(csEnt) then
+            csEnt = ClientsideModel('models/editor/playerstart.mdl')
+            csEnt:SetNoDraw(true)
+        else
+            pos = LocalPlayer():GetEyeTrace().HitPos
 
-                    settings.pos = pos
-                    settings.angle = ang
+            if pos then
+                ang = angleSet[self:GetWeapon():GetNWInt('SpawnPointEditorAngle', 1)]
 
-                    render.SuppressEngineLighting(true)
-                    render.Model(settings, csEnt)
-                    render.SuppressEngineLighting(false)
-                end
+                settings.pos = pos
+                settings.angle = ang
+
+                render.SuppressEngineLighting(true)
+                render.Model(settings, csEnt)
+                render.SuppressEngineLighting(false)
             end
+        end
+
         cam.End3D()
-
-        if not pos then return end
-
-        local posToScreen = pos:ToScreen()
-
-        draw.SimpleText('Position: ' .. pos.x .. ' ' .. pos.y .. ' ' .. pos.z, 'SpawnPointEditor', posToScreen.x, posToScreen.y + 10, color_white, TEXT_ALIGN_CENTER)
-        draw.SimpleText('Rotation: ' .. ang.y, 'SpawnPointEditor', posToScreen.x, posToScreen.y + 25, color_white, TEXT_ALIGN_CENTER)
     end
 
     function TOOL.BuildCPanel(panel)
@@ -342,10 +337,4 @@ else
         panel:Button('Restore Map Spawn Points', 'spawnpoint_editor_restore')
         panel:Button('Reset', 'spawnpoint_editor_reset')
     end
-
-    if IsValid(_frame) then
-        _frame:Remove()
-    end
-
-    _frame = vgui.Create( "SpawnPointEditor" )
 end
