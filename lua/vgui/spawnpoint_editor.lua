@@ -84,7 +84,7 @@ function PANEL:Init()
         local selected = self.selected
         if not IsValid(selected) then return end
 
-        local x, y = _frame:GetPos()
+        local x, y = self:GetPos()
         local ang = selected:GetAngles()
 
         ang.y = ang.y + 180
@@ -129,7 +129,7 @@ function PANEL:ThreeComponent(bar, name)
 
     local contents = bar:Add('DSizeToContents')
 
-    contents:SetSizeX(true)
+    contents:SetSizeX(false)
     contents:Dock(TOP)
     contents:InvalidateLayout()
 
